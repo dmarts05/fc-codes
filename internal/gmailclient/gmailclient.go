@@ -3,6 +3,8 @@ package gmailclient
 import (
 	"encoding/base64"
 	"errors"
+	"log"
+	"time"
 
 	"google.golang.org/api/gmail/v1"
 )
@@ -24,9 +26,14 @@ func New(credentialsFileName string, tokenFileName string) (*GmailClient, error)
 	}, nil
 }
 
-// Obtains the body of the latest email from a sender.
-func (gc *GmailClient) GetLatestEmailFromSender(sender string) (string, error) {
-	r, err := gc.service.Users.Messages.List("me").Q("from:" + sender).Do()
+// Obtains the body of the first email received today from a given sender.
+func (gc *GmailClient) GetTodaysEmailFromSender(sender string) (string, error) {
+	today := time.Now().Format("2006/01/02")
+	tomorrow := time.Now().AddDate(0, 0, 1).Format("2006/01/02")
+	query := "from:" + sender + " after:" + today + " before:" + tomorrow
+	log.Printf("Querying Gmail with: %s", query)
+
+	r, err := gc.service.Users.Messages.List("me").Q(query).Do()
 	if err != nil {
 		return "", err
 	}

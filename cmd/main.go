@@ -34,7 +34,7 @@ $$ |      \$$$$$$  |      \$$$$$$  | $$$$$$  |$$$$$$$  |$$$$$$$$\ \$$$$$$  |
 	// If the wait flag is set (non-zero), run the program in a loop
 	if *waitTime > 0 {
 		for {
-			fmt.Printf("Waiting for %d seconds before the next execution...\n", *waitTime)
+			log.Printf("Waiting for %d seconds before the next execution...\n", *waitTime)
 			time.Sleep(time.Duration(*waitTime) * time.Second)
 			run()
 		}
@@ -45,13 +45,15 @@ func run() {
 	// Create Gmail client
 	gc, err := gmailclient.New("credentials.json", "token.json")
 	if err != nil {
-		log.Fatalf("Unable to create Gmail client: %v", err)
+		log.Printf("Unable to create Gmail client: %v", err)
+		return
 	}
 
 	// Get latest email body
-	body, err := gc.GetLatestEmailFromSender("forocoches@substack.com")
+	body, err := gc.GetTodaysEmailFromSender("forocoches@substack.com")
 	if err != nil {
-		log.Fatalf("Unable to get email body: %v", err)
+		log.Printf("Unable to get email body: %v", err)
+		return
 	}
 
 	// Extract message
@@ -61,11 +63,13 @@ func run() {
 	// Create Telegram sender and send the message
 	ts, err := telegramsender.New("telegram.json")
 	if err != nil {
-		log.Fatalf("Unable to create Telegram sender: %v", err)
+		log.Printf("Unable to create Telegram sender: %v", err)
+		return
 	}
 
 	err = ts.SendMessage(message)
 	if err != nil {
-		log.Fatalf("Unable to send message: %v", err)
+		log.Printf("Unable to send message: %v", err)
+		return
 	}
 }
