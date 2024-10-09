@@ -1,47 +1,46 @@
-# Go parameters
-GOCMD = go
-GOBUILD = $(GOCMD) build
-GOTEST = $(GOCMD) test
-GOFMT = $(GOCMD) fmt
-BINARY_NAME = fc-codes
+# Change these variables as necessary.
+MAIN_PACKAGE_PATH := ./cmd
+BINARY_NAME := fc-codes
 
-# Directories
-CMD_DIR = ./cmd
-INTERNAL_DIR = ./internal
-BIN_DIR = ./bin
+# ==================================================================================== #
+# HELPERS
+# ==================================================================================== #
 
-# Build the project
-all: test build
-
-# Format the Go source files
-fmt:
-	$(GOFMT) ./...
-
-# Build the binary
-build:
-	$(GOBUILD) -o $(BIN_DIR)/$(BINARY_NAME) $(CMD_DIR)/main.go
-
-# Run the app
-run:
-	$(GOCMD) run $(CMD_DIR)/main.go
-
-# Run tests
-test:
-	$(GOTEST) ./...
-
-# Clean the build
-clean:
-	rm -f $(BIN_DIR)/$(BINARY_NAME)
-
-# Help command
+## help: print this help message
+.PHONY: help
 help:
-	@echo "Usage:"
-	@echo "  make all          - Run tests and build"
-	@echo "  make fmt          - Format source files"
-	@echo "  make build        - Build binary"
-	@echo "  make run          - Run the application"
-	@echo "  make test         - Run tests"
-	@echo "  make clean        - Clean build artifacts"
-	@echo "  make build-linux  - Cross-compile for Linux"
+	@echo 'Usage:'
+	@sed -n 's/^##//p' ${MAKEFILE_LIST} | column -t -s ':' |  sed -e 's/^/ /'
 
-.PHONY: all fmt build run test clean build-linux help
+# ==================================================================================== #
+# DEVELOPMENT
+# ==================================================================================== #
+
+## test: run all tests
+.PHONY: test
+test:
+	go test -v -race -buildvcs ./...
+
+## test/cover: run all tests and display coverage
+.PHONY: test/cover
+test/cover:
+	go test -v -race -buildvcs -coverprofile=/tmp/coverage.out ./...
+	go tool cover -html=/tmp/coverage.out
+
+## build: build the application
+.PHONY: build
+build:
+	go build -o=/tmp/bin/${BINARY_NAME} ${MAIN_PACKAGE_PATH}
+
+## build/prod: build the application for production in Linux, Windows and MacOS with stripped binaries
+.PHONY: build/prod
+build/prod:
+	GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -o=./bin/${BINARY_NAME}-linux-amd64 ${MAIN_PACKAGE_PATH}
+	GOOS=windows GOARCH=amd64 go build -ldflags="-s -w" -o=./bin/${BINARY_NAME}-windows-amd64.exe ${MAIN_PACKAGE_PATH}
+	GOOS=darwin GOARCH=amd64 go build -ldflags="-s -w" -o=./bin/${BINARY_NAME}-darwin-amd64 ${MAIN_PACKAGE_PATH}
+
+## run: run the  application
+.PHONY: run
+run: build
+	/tmp/bin/${BINARY_NAME}
+
