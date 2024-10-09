@@ -3,9 +3,9 @@ package main
 import (
 	"log"
 
-	"github.com/dmarts05/forocoches-newsletter-codes/internal/codesextractor"
-	"github.com/dmarts05/forocoches-newsletter-codes/internal/gmailclient"
-	"github.com/dmarts05/forocoches-newsletter-codes/internal/telegramsender"
+	"github.com/dmarts05/fc-codes/internal/codesextractor"
+	"github.com/dmarts05/fc-codes/internal/gmailclient"
+	"github.com/dmarts05/fc-codes/internal/telegramsender"
 )
 
 func main() {

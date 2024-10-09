@@ -1,4 +1,4 @@
-module github.com/dmarts05/forocoches-newsletter-codes
+module github.com/dmarts05/fc-codes
 
 go 1.23.2
 
