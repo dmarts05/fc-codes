@@ -13,10 +13,15 @@ type GmailClient struct {
 }
 
 // Creates a new Gmail client.
-func New(credentialsFileName string, tokenFileName string) *GmailClient {
-	return &GmailClient{
-		service: getGmailService(credentialsFileName, tokenFileName),
+func New(credentialsFileName string, tokenFileName string) (*GmailClient, error) {
+	service, err := getGmailService(credentialsFileName, tokenFileName)
+	if err != nil {
+		return nil, err
 	}
+
+	return &GmailClient{
+		service,
+	}, nil
 }
 
 // Obtains the body of the latest email from a sender.
