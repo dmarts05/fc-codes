@@ -5,19 +5,21 @@ import (
 	"strings"
 )
 
-// Generates a message with the FC codes found in the text.
+// GenerateFCCodesMessageFromText generates a message containing FC codes found in the provided text.
 func GenerateFCCodesMessageFromText(text string) string {
 	codes := getFCCodesFromText(text)
 
 	var sb strings.Builder
 
-	sb.WriteString("FC Codes\n")
-	sb.WriteString("========\n\n")
-
+	// Append each code
 	for _, code := range codes {
+		sb.WriteString("- `")
 		sb.WriteString(code)
-		sb.WriteString("\n")
+		sb.WriteString("`\n")
 	}
+
+	// Add footer with a link to ForoCoches invitation codes redemption page
+	sb.WriteString("\n[ForoCoches - Código de Invitación](https://forocoches.com/codigo)\n")
 
 	return sb.String()
 }

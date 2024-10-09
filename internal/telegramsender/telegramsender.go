@@ -28,8 +28,9 @@ func New(telegramFileName string) (*TelegramSender, error) {
 func (ts *TelegramSender) SendMessage(message string) error {
 	sendUrl := ts.getBotUrl() + "/sendMessage"
 	body, err := json.Marshal(map[string]string{
-		"chat_id": ts.config.ChatID,
-		"text":    message,
+		"chat_id":    ts.config.ChatID,
+		"text":       message,
+		"parse_mode": "Markdown",
 	})
 	if err != nil {
 		return err
